@@ -11,10 +11,10 @@ local Circle = Drawing.new("Circle")
 local Plr = game.Players.LocalPlayer
 
 Mouse.KeyDown:Connect(function(KeyPressed)
-    if KeyPressed == (Settings.AimLock.Aimlockkey) then
-        if Settings.AimLock.Enabled == true then
-            Settings.AimLock.Enabled = false
-            if Settings.AimLock.Notifications == true then
+    if KeyPressed == getgenv().SilentKey then
+        if getgenv().SilentEnabled == true then
+            getgenv().SilentEnabled = false
+            if getgenv().SilentNotifs == true then
                 Plr = FindClosestPlayer()
                 game.StarterGui:SetCore("SendNotification", {
                     Title = "p",
@@ -23,8 +23,8 @@ Mouse.KeyDown:Connect(function(KeyPressed)
             end
         else
             Plr = FindClosestPlayer()
-            Settings.AimLock.Enabled = true
-            if Settings.AimLock.Notifications == true then
+            getgenv().SilentEnabled = true
+            if getgenv().SilentNotifs == true then
                 game.StarterGui:SetCore("SendNotification", {
                     Title = "p",
                     Text = "Locked On :  " .. tostring(Plr.Character.Humanoid.DisplayName)
@@ -56,10 +56,10 @@ function FindClosestPlayer()
 end
 
 RunService.Heartbeat:connect(function()
-    if Settings.AimLock.Enabled == true then
-        local Vector = CurrentCamera:WorldToViewportPoint(Plr.Character[Settings.AimLock.Aimpart].Position +
-                                                              (Plr.Character[Settings.AimLock.Aimpart].Velocity *
-                                                              Settings.AimLock.Prediction))
+    if getgenv().SilentEnabled == true then
+        local Vector = CurrentCamera:WorldToViewportPoint(Plr.Character[getgenv().SilentAimpart].Position +
+                                                              (Plr.Character[getgenv().SilentAimpart].Velocity *
+                                                              getgenv().SilentPrediction))
         Line.Color = Settings.Settings.Color
         Line.Transparency = Settings.Settings .Transparency
         Line.Thickness = Settings.Settings .Thickness
@@ -67,12 +67,12 @@ RunService.Heartbeat:connect(function()
         Line.To = Vector2.new(Vector.X, Vector.Y)
         Line.Visible = true
         Circle.Position = Vector2.new(Mouse.X, Mouse.Y + Inset)
-        Circle.Visible = Settings.Settings.FOV
+        Circle.Visible = getgenv().SilentFov
         Circle.Thickness = 1.5
         Circle.Thickness = 2
         Circle.Radius = 60
         Circle.Color = Settings.Settings.Color
-    elseif Settings.AimLock.FOV == true then
+    elseif getgenv().SilentFov == true then
         Circle.Visible = true
     else
         Circle.Visible = false
@@ -85,9 +85,9 @@ local old = mt.__namecall
 setreadonly(mt, false)
 mt.__namecall = newcclosure(function(...)
     local args = {...}
-    if Settings.AimLock.Enabled and getnamecallmethod() == "FireServer" and args[2] == "MousePos" then
-        args[3] = Plr.Character[Settings.AimLock.Aimpart].Position +
-                      (Plr.Character[Settings.AimLock.Aimpart].Velocity * Settings.AimLock.Prediction)
+    if getgenv().SilentEnabled and getnamecallmethod() == "FireServer" and args[2] == "MousePos" then
+        args[3] = Plr.Character[getgenv().SilentAimpart].Position +
+                      (Plr.Character[getgenv().SilentAimpart].Velocity * getgenv().SilentPrediction)
 
         return old(unpack(args))
     end
